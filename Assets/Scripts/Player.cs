@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
     }
     private void ReverseXDir()
     {
+        //Debug.Log("change");
         float x = -Mathf.Sign(rb2D.velocity.x);
         rb2D.velocity = new Vector2(x * moveSpeed, rb2D.velocity.y);
     }
@@ -48,6 +49,7 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Wall"))
         {
+            //Debug.Log("change");
             ReverseXDir();
             gameController.CollisionWithWall();
         }
