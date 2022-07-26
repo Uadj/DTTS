@@ -49,6 +49,7 @@ public class Player : MonoBehaviour
         if (collision.CompareTag("Wall"))
         {
             ReverseXDir();
+            gameController.CollisionWithWall();
         }
         else if (collision.CompareTag("Spike"))
         {

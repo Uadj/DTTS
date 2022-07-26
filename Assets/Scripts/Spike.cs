@@ -18,6 +18,7 @@ public class Spike : MonoBehaviour
     {
         float current = 0;
         float percent = 0;
+
         while(percent < 1)
         {
             current += Time.deltaTime;
