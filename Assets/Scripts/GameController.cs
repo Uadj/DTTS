@@ -7,10 +7,16 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private SpikeSpawner[] spikeSpawners;
     private UIController uIController;
+    private RandomColor randomColor;
+
     private int currentSpawn = 0;
+    private int currentScore = 0;
+    [SerializeField]
+    private Player player;
 
     private void Awake()
     {
+        randomColor = GetComponent<RandomColor>();
         uIController = GetComponent<UIController>();
     }
     private IEnumerator Start()
@@ -19,6 +25,7 @@ public class GameController : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
+                player.GameStart();
                 uIController.GameStart();
                 yield break;
             }
@@ -29,6 +36,9 @@ public class GameController : MonoBehaviour
     public void CollisionWithWall()
     {
         UpdateSpikes();
+        currentScore++;
+        uIController.UpdateScore(currentScore);
+        randomColor.OnChange();
     }
 
     private void UpdateSpikes()
@@ -41,6 +51,22 @@ public class GameController : MonoBehaviour
     }
     public void GameOver()
     {
-        Debug.Log("GameOver");
+        StartCoroutine(nameof(GameOverProcess));
+    }
+    private IEnumerator GameOverProcess()
+    {
+        if(currentScore > PlayerPrefs.GetInt("HIGHSCORE"))
+        {
+            PlayerPrefs.SetInt("HIGHSCORE", currentScore);
+        }
+        uIController.GameOver();
+        while (true)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+            }
+            yield return null;
+        }
     }
 }

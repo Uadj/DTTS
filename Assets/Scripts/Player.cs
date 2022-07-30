@@ -8,22 +8,47 @@ public class Player : MonoBehaviour
     private GameController gameController;
     [SerializeField]
     private GameObject playerDieEffect;
-
+    [SerializeField]
+    private PlayerTrailSpawner playerTrailSpawner;
     [SerializeField]
     private float moveSpeed = 5;
     [SerializeField]
     private float jumpForce = 15;
     private Rigidbody2D rb2D;
+    private AudioSource audioSource;
     
     // Start is called before the first frame update
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         rb2D = GetComponent<Rigidbody2D>();
+        rb2D.isKinematic = true;
+
+        //rb2D.velocity = new Vector2(moveSpeed, jumpForce);
+        //StartCoroutine(nameof(UpdateInput));
+    }
+    private IEnumerator Start()
+    {
+        float originY = transform.position.y;
+        float deltaY = 0.5f;
+        float moveSpeedY = 2;
+
+        while (true)
+        {
+            float y = originY + deltaY * Mathf.Sin(Time.time * moveSpeedY);
+            transform.position = new Vector2(transform.position.x, y);
+
+            yield return null;
+        }
+    }
+    public void GameStart()
+    {
+        rb2D.isKinematic = false;
         rb2D.velocity = new Vector2(moveSpeed, jumpForce);
+
+        StopCoroutine(nameof(Start));
         StartCoroutine(nameof(UpdateInput));
     }
-
-
     private IEnumerator UpdateInput()
     {
         while (true)
@@ -31,6 +56,7 @@ public class Player : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 JumpTo();
+                playerTrailSpawner.OnSpawn();
             }
             yield return null;
         }
@@ -52,6 +78,7 @@ public class Player : MonoBehaviour
             //Debug.Log("change");
             ReverseXDir();
             gameController.CollisionWithWall();
+            audioSource.Play();
         }
         else if (collision.CompareTag("Spike"))
         {
